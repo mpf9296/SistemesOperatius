@@ -8,11 +8,10 @@
 
 int main() 
 {
-    int a, b[2], nbytes;
+    int a;
     char string [100], buffer [100], entrada [80];
 	pid_t pid; 
-	char fin[100] = "FINAL";
-	char std[100] = "";
+	char b[] = {"hi1","hi2"};
 	
 
 	
@@ -29,12 +28,13 @@ int main()
 		printf ("Nom del fitxer d'escritura: (sense format)\n");
 		scanf("%s",entrada);
 		strcat(entrada,".txt");
+		strcpy(b[1],entrada);
 		close(b[1]);
           
     }
     else {
     	close(b[1]);
-    	a = open(entrada, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    	a = open(b[1], O_WRONLY|O_CREAT|O_TRUNC, 0644);
     	close(b[0]);
     }
     waitpid( pid, NULL, 0 );
