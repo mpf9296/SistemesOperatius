@@ -6,39 +6,57 @@
 #include <fcntl.h>
 #include <string.h>
 
-int main() 
-{
-    int a;
-    char string [100], buffer [100], entrada [80];
-	pid_t pid; 
-	char b[] = {"hi1","hi2"};
-	
+void err_sys(const char* cadena){ 
 
-	
+ perror(cadena); 
 
-    pipe(b);
-    
+ exit(1);
+} 
+
+int main () {
+
+    int a, canonada[2], canonada2[2], nbytes;
+    int bucle = 1;
+    char buffer [200], entrada [80];
+    pid_t pid; 
+
+    printf ("Introdueix el nom del fitxer d'escritura:\n(No cal format)\n");  
+    scanf("%s", entrada);
+    strcat(entrada,".txt");
+    a = open(entrada, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+
+    pipe(canonada);
+    pipe(canonada2);
+
     if((pid = fork()) == -1) {
         perror("error en el fork");
         exit(1);
     }
 
-    if(pid == 0){
-    	close(b[0]);
-		printf ("Nom del fitxer d'escritura: (sense format)\n");
-		scanf("%s",entrada);
-		strcat(entrada,".txt");
-		strcpy(b[1],entrada);
-		close(b[1]);
-          
-    }
+    if((pid = fork()) == 0) {
+        close(canonada[1]);
+        close(canonada2[0]);
+
+        while ((nbytes=read(canonada[0], buffer, 200))>0) write(1, buffer, nbytes);
+        close(canonada[0]);
+
+        strcpy(buffer, "Canonada fill.\n" );
+        write(canonada2[1], buffer, strlen(buffer));
+        close(canonada2[1]);
+    } 
     else {
-    	close(b[1]);
-    	a = open(b[1], O_WRONLY|O_CREAT|O_TRUNC, 0644);
-    	close(b[0]);
+        close(canonada[0]);
+        close(canonada2[1]);
+
+        strcpy(buffer, "Canonada padre\n");
+        write(canonada[1], buffer, strlen(buffer));
+        close(canonada[1]);
+
+        while((nbytes = read(canonada2[0], buffer, 200) > 0)) write(1, buffer, nbytes);
+        close(canonada2[0]);
     }
-    waitpid( pid, NULL, 0 );
-    close(a);
+
+    waitpid(pid, NULL, 0 );
     return 0;
-    exit(0);
+    exit (0);
 }

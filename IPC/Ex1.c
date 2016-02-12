@@ -10,7 +10,7 @@ int main()
 {
     int a, b[2], nbytes;
     char string [100], buffer [100], entrada [80];
-	pid_t childpid; 
+	pid_t pid; 
 	char fin[100] = "FINAL";
 	
 
@@ -21,12 +21,12 @@ int main()
 
     pipe(b);
     
-    if((childpid = fork()) == -1) {
+    if((pid = fork()) == -1) {
         perror("error en el fork");
         exit(1);
     }
 
-    if(childpid == 0){
+    if(pid == 0){
 		printf("Escriu un text:");
         scanf("%s", string);
 		while (strcmp(string,fin) != 0) {
