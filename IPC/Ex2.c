@@ -40,14 +40,16 @@ int main () {
         }
         close(can[1]);
 
-        printf("Escriu un text:\n");
-        fgets(string, sizeof(string), stdin);
-        close(can2[0]);
-        while (strncmp(string,fin,5) != 0) {
-            write(can2[1], &string, strlen(string)); 
-            fgets(string, 100, stdin);
+        if (nomLlegit == 2) {
+            printf("Escriu un text:\n");
+            fgets(string, sizeof(string), stdin);
+            close(can2[0]);
+            while (strncmp(string,fin,5) != 0) {
+                write(can2[1], &string, strlen(string)); 
+                fgets(string, 100, stdin);
+            }
+            close(can2[1]);
         }
-        close(can2[1]);
 
     } 
     else {
@@ -60,10 +62,12 @@ int main () {
         close(can[0]);
 
         close(can2[1]);
-        do {
-            nbytes = read(can2[0], &buffer2, sizeof(buffer2));
-            write(a, &buffer2, nbytes);
-        } while (strncmp(buffer2,fin,5) != 0); 
+        if (nomLlegit == 2) {
+            do {
+                nbytes = read(can2[0], &buffer2, sizeof(buffer2));
+                write(a, &buffer2, nbytes);
+            } while (strncmp(buffer2,fin,5) != 0); 
+        }
         close(can2[0]);
     }
 
