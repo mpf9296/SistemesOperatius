@@ -12,12 +12,10 @@ int main()
     char string [100], buffer [100], entrada [80];
 	pid_t pid; 
 	char fin[100] = "FINAL";
+    int marca=0;
 	
 
-	printf ("Nom del fitxer d'escritura: (sense format)");  
-	scanf("%s", entrada);
-	strcat(entrada,".txt");  
-	a = open(entrada, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+	a = open("entrada.txt", O_WRONLY|O_CREAT|O_TRUNC, 0644);
 
     pipe(b);
     
@@ -27,17 +25,28 @@ int main()
     }
 
     if(pid == 0){
-		printf("Escriu un text:");
-        scanf("%s", string);
-		while (strcmp(string,fin) != 0) {
-			write(b[1], &string, strlen(string)); 
-			scanf("%s", string);
-		}
+        
+		printf("Escriu un text:\n");
+        while (marca == 0) {
+            scanf("%s", string);
+
+            if ( (strcmp(string,fin) == 0))
+            { marca=1; }
+    		while (strcmp(string,fin) != 0) {
+                strcat(string," ");
+    			write(b[1], &string, strlen(string)); 
+    			scanf("%s", string);
+    		}
+        }
           
     }
     else {
-	  nbytes = read(b[0], &buffer, sizeof(string));
-	  write(a, &buffer, nbytes);
+
+        while(marca == 0) {
+            nbytes = read(b[0], &buffer, sizeof(string));
+            write(a, &buffer, nbytes);
+        }
+	  
     }
 
     close(a);

@@ -13,20 +13,21 @@ void err_sys(const char* cadena){
 
 int main () {
 
-    int a, can[2];
+    int a, can[2], can2[2];
     char buffer [100], entrada [80];
     pid_t pid; 
 
     
 
     pipe(can);
+    pipe(can2);
 
     if((pid = fork()) == -1) {
         perror("error en el fork");
         exit(1);
     }
 
-    if(pid != 0) {
+    if((pid = fork()) != 0) {
         close(can[0]);
         printf ("Introdueix el nom del fitxer d'escritura:\n(No cal format)\n");  
         scanf("%s", entrada);
@@ -37,8 +38,11 @@ int main () {
     else {
         close(can[1]);
         read(can[0],buffer, sizeof(buffer));
-        a = open(buffer, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-        close(can[0]);
+        if (access(buffer) != -1) {
+            a = open(buffer, O_RDONLY, 0644);
+            close(can[0]);
+        }
+        
     }
 
     waitpid(pid, NULL, 0 );
