@@ -8,10 +8,10 @@
 
 int main() 
 {
-    int a, b[2], nbytes;
+    int a, b[2], b2[2], nbytes;
     char string [100], buffer [100], entrada [80];
 	pid_t pid; 
-	char fin[100] = "FINAL";
+	char fin[5] = "FINAL";
     int marca=0;
 	
 
@@ -24,28 +24,27 @@ int main()
         exit(1);
     }
 
-    if(pid == 0){
+    if(pid != 0){
         
 		printf("Escriu un text:\n");
-        while (marca == 0) {
-            scanf("%s", string);
+        fgets(string, sizeof(string), stdin);
+        //scanf("%s", string);
 
-            if ( (strcmp(string,fin) == 0))
-            { marca=1; }
-    		while (strcmp(string,fin) != 0) {
-                strcat(string," ");
-    			write(b[1], &string, strlen(string)); 
-    			scanf("%s", string);
-    		}
-        }
+
+		while (strncmp(string,fin,5) != 0) {
+            //strcat(string," ");
+			write(b[1], &string, strlen(string)); 
+			//scanf("%s", string);
+            fgets(string, 100, stdin);
+		}
           
     }
     else {
-
-        while(marca == 0) {
-            nbytes = read(b[0], &buffer, sizeof(string));
+        do {
+            nbytes = read(b[0], &buffer, sizeof(buffer));
             write(a, &buffer, nbytes);
-        }
+        } while (strncmp(buffer,fin,5) != 0);
+        
 	  
     }
 
